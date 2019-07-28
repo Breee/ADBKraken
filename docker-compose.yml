@@ -1,0 +1,11 @@
+version: '2.4'
+services:
+  kraken:
+    build:
+      context: ""
+      dockerfile: Dockerfile
+    volumes:
+      - ./kraken/:/usr/src/app/
+    restart: always
+    networks:
+      - default

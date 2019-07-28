@@ -44,7 +44,7 @@ class ADBmanager(object):
 
     def __reboot(self, device, serial):
         LOGGER.info("#### Rebooting %s ####" % (device))
-        ps = subprocess.Popen(["adb", "-s", serial, "reboot"], stdout=subprocess.PIPE)
+        ps = subprocess.Popen(["adb", "-s", serial, "reboot"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         output = ps.communicate()[0].decode('utf-8')
         return output
 
