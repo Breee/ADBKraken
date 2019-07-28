@@ -20,13 +20,6 @@ class UtilsCog(commands.Cog, name="Utility"):
         await ctx.send('Online for %.3f seconds (that are %.3f minutes or %.3f hours or %.3f days)' % (
             seconds, minutes, hours, days))
 
-    @commands.command(aliases=['dracarys'])
-    @commands.is_owner()
-    async def purge(self, ctx, number):
-        async for message in ctx.channel.history(limit=int(number)):
-            await message.delete()
-        await ctx.send("Dracarys! Purged %s messages!" % number)
-
     @commands.command(help="Show all servers (owner only)")
     @commands.is_owner()
     async def servers(self, ctx):

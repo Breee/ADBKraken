@@ -43,6 +43,8 @@ class ADBKraken(commands.Bot):
             await ctx.author.send('This command cannot be used in private messages.')
         elif isinstance(error, commands.DisabledCommand):
             await ctx.author.send('Sorry. This command is disabled and cannot be used.')
+        elif isinstance(error, commands.NotOwner):
+            await ctx.author.send('You are not my Master!')
         elif isinstance(error, commands.CommandInvokeError):
             LOGGER.critical(f'In {ctx.command.qualified_name}:')
             traceback.print_tb(error.original.__traceback__)

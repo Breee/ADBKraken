@@ -3,13 +3,13 @@ from discord.ext import commands
 import time
 
 
-class ADBCog(commands.Cog, name="Utility"):
+class ADBCog(commands.Cog, name="ADBKraken"):
     def __init__(self, bot):
         self.bot = bot
         self.start_time = time.time()
         self.manager = ADBmanager()
 
-    @commands.command(help="Connects to devices")
+    @commands.command(help="Connects to devices (bot owner only)")
     @commands.is_owner()
     async def connect(self, ctx):
         with ctx.typing():
@@ -17,7 +17,7 @@ class ADBCog(commands.Cog, name="Utility"):
             outputs = self.manager.connect_all()
             await ctx.send(outputs)
 
-    @commands.command(help="Shows Devices")
+    @commands.command(help="Shows Devices (bot owner only)")
     @commands.is_owner()
     async def devices(self, ctx):
         with ctx.typing():
@@ -25,7 +25,7 @@ class ADBCog(commands.Cog, name="Utility"):
             devices = self.manager.get_devices()
             await ctx.send(devices)
 
-    @commands.command(help="Get Pogo Versions")
+    @commands.command(help="Get Pogo Versions (bot owner only)")
     @commands.is_owner()
     async def pogoversion(self, ctx):
         with ctx.typing():
@@ -33,7 +33,7 @@ class ADBCog(commands.Cog, name="Utility"):
             versions = self.manager.get_pogo_versions()
             await ctx.send(versions)
 
-    @commands.command(help="Reboot device")
+    @commands.command(help="Reboot device (bot owner only)")
     @commands.is_owner()
     async def reboot(self, ctx, device=None):
         with ctx.typing():
