@@ -1,0 +1,18 @@
+# Directory where the log file of the bot shall be stored
+LOG_PATH = '.'
+
+"""
+Discord Section.
+"""
+# The Token of your botuser.
+BOT_TOKEN = 'aasdasdasdasdasdasds'
+# Discord Status
+PLAYING = 'ADBKraken'
+# Command prefix
+PREFIX = '!'
+
+DEVICES = {
+    'DEVICE1' : '192.168.178.77:5555',
+    'DEVICE2' : '192.168.178.95:5555',
+}
+
