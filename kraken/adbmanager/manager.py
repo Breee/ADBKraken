@@ -48,6 +48,15 @@ class ADBmanager(object):
         output = ps.communicate()[0].decode('utf-8')
         return output
 
+    def __reboot_list(self, device_names):
+        LOGGER.info("#### Got list to reboot %s ####" % (str(device_names)))
+        outputs = []
+        devices = [(device_name, self.devices[device_name]) for device_name in device_names]
+        for device, serial in devices:
+            output = self.__reboot(device, serial)
+            outputs.append("%s : %s : %s" % (device, serial, output))
+        return outputs
+
     def __reboot_all(self):
         outputs = []
         for device, serial in self.devices.items():
@@ -55,8 +64,11 @@ class ADBmanager(object):
             outputs.append("%s : %s : %s" % (device, serial, output))
         return "\n".join(sorted_nicely(outputs))
 
-    def reboot(self, device=None):
-        if device is not None and device in self.devices:
-            self.__reboot(device, serial=self.devices[device])
-        elif device is None:
-            self.__reboot_all()
+    def reboot(self, device_names=None):
+        output = "return: "
+        print(device_names)
+        if device_names is not None and device_names:
+            output += str(self.__reboot_list(device_names))
+        elif device_names is None or not device_names:
+            output += str(self.__reboot_all())
+        return output

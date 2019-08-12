@@ -35,8 +35,8 @@ class ADBCog(commands.Cog, name="ADBKraken"):
 
     @commands.command(help="Reboot device (bot owner only)")
     @commands.is_owner()
-    async def reboot(self, ctx, device=None):
+    async def reboot(self, ctx, *device_names):
         with ctx.typing():
-            await ctx.send('Rebooting %s ...' % (device if device is not None else 'all devices'))
-            output = self.manager.reboot(device)
+            await ctx.send('Rebooting %s ...' % (str(device_names) if device_names is not None else 'all devices'))
+            output = self.manager.reboot(device_names)
             await ctx.send(output)
