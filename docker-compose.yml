@@ -1,9 +1,7 @@
 version: '2.4'
 services:
   kraken:
-    build:
-      context: ""
-      dockerfile: Dockerfile
+    image: breedocker/adbkraken
     volumes:
       - ./kraken/:/usr/src/app/
     restart: always
