@@ -37,6 +37,7 @@ DEVICES = {
 ## System Packages:
 - python 3.7
 - pip3
+- adb
 
 ## Deploy
 ### Install python3 requirements
