@@ -1,5 +1,6 @@
 import time
 import subprocess
+import asyncio
 
 boxes = ['192.168.0.151:5555',
          '192.168.0.152:5555',
@@ -130,11 +131,35 @@ def update_pogodroid(running_procs):
                 subprocess.Popen(["adb", "-s", serial, "install", "-r", "/home/bree/repos/ADBKraken/PogoDroid.apk"],
                                  stdout=subprocess.PIPE, stderr=subprocess.STDOUT))
 
-
-def connect():
+def update_rgc(running_procs):
     for device, serial in enumerate(boxes):
-        print("#### Connecting %s ####" % (device))
-        subprocess.call(["adb", "connect", serial])
+        print("#### Updating %s ####" % (device))
+        running_procs.append(
+                subprocess.Popen(["adb", "-s", serial, "install", "-r", "/home/bree/repos/ADBKraken/RemoteGpsController.apk"],
+                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT))
+async def __connect_device(device, serial):
+    print("#### Connecting %s ####" % (device))
+    cmd = ["adb", "connect", serial]
+    proc = await asyncio.create_subprocess_shell(
+            cmd,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE)
+    stdout, stderr = await proc.communicate()
+    return stdout, stderr
+
+async def run(cmd):
+    proc = await asyncio.create_subprocess_shell(
+        cmd,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE)
+
+    stdout, stderr = await proc.communicate()
+
+    return stdout.decode('utf-8'),stderr.decode('utf-8')
+
+async def connect():
+    results = await asyncio.gather(*[run(f"adb connect {serial}") for device, serial in TVBOXES.items()])
+    return results
 
 
 def is_outdated(device):
@@ -159,20 +184,24 @@ def print_versions():
 
 if __name__ == '__main__':
     running_procs = []
-    # connect()
+    #connect()
+    #asyncio.get_event_loop()
+    results = asyncio.run(connect())
+    print(results)
     # update_pogodroid(running_procs)
     # get_latest_pogo()
     # print_versions()
     # update_pogo(running_procs)
+    #update_rgc(running_procs)
     # reboot_all(running_procs)
-    while running_procs:
-        for proc in running_procs:
-            retcode = proc.poll()
-            if retcode is not None:  # Process finished.
-                print(f"{proc.args} finshed")
-                running_procs.remove(proc)
-                break
-            else:  # No process is done, wait a bit and check again.
-                time.sleep(.1)
-                continue
-    print({f"TVBOX{x + 1}": y for x, y in enumerate(boxes)})
+
+    #while running_procs:
+    #    for proc in running_procs:
+    #        retcode = proc.poll()
+    #        if retcode is not None:  # Process finished.
+    #            print(f"{proc.args} finshed")
+    #            running_procs.remove(proc)
+    #            break
+    #        else:  # No process is done, wait a bit and check again.
+    #            time.sleep(.1)
+    #            continue

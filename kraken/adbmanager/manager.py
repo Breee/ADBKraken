@@ -1,4 +1,6 @@
 import subprocess
+import asyncio
+import time
 import config as config
 
 from utility.globals import LOGGER
@@ -8,23 +10,24 @@ class ADBmanager(object):
 
     def __init__(self):
         self.devices = config.DEVICES
+        self.running_processes = []
 
-    def __connect(self, device, serial):
-        LOGGER.info("#### Connecting to %s ####" % (device))
-        ps = subprocess.Popen(["adb", "connect", serial], stdout=subprocess.PIPE)
-        output = ps.communicate()[0].decode('utf-8')
+    async def run(self,cmd):
+        proc = await asyncio.create_subprocess_shell(
+                cmd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE)
+
+        stdout, stderr = await proc.communicate()
+
+        return stdout.decode('utf-8'), stderr.decode('utf-8')
+
+    async def connect_all(self):
+        results = await asyncio.gather(*[self.run(f"adb connect {serial}") for device, serial in self.devices.items()])
+        output = []
+        for id, out in enumerate(results, start=0):
+            output.append((list(self.devices.items())[id][0], list(self.devices.items())[id][1], out[0], out[1]))
         return output
-
-    def connect_all(self):
-        outputs = []
-        for device, serial in self.devices.items():
-            output = self.__connect(device, serial)
-            if 'connected' in output:
-                output = 'connected'
-            else:
-                output = 'unreachable'
-            outputs.append("%s : %s : %s" % (device, serial, output))
-        return "\n".join(sorted_nicely(outputs))
 
     def get_devices(self):
         ps = subprocess.Popen(["adb", "devices"], stdout=subprocess.PIPE)

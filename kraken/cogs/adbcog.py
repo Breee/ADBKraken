@@ -14,16 +14,16 @@ class ADBCog(commands.Cog, name="ADBKraken"):
     async def connect(self, ctx):
         with ctx.typing():
             await ctx.send('Connecting to devices ...')
-            outputs = self.manager.connect_all()
-            await ctx.send(outputs)
+            outputs = await self.manager.connect_all()
+            message = "```diff\n"
+            for device,serial,out,err in outputs:
+                if 'connected' in out:
+                    message += f"+ [{serial:>12}] [{device:>12}] [  OK]\n"
+                else:
+                    message += f"- [{serial:>12}] [{device:>12}] [DEAD]\n"
+            message += "```"
+            await ctx.send(message)
 
-    @commands.command(help="Shows Devices (bot owner only)")
-    @commands.is_owner()
-    async def devices(self, ctx):
-        with ctx.typing():
-            await ctx.send('Fetching devices ...')
-            devices = self.manager.get_devices()
-            await ctx.send(devices)
 
     @commands.command(help="Get Pogo Versions (bot owner only)")
     @commands.is_owner()
