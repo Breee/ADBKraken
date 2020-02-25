@@ -31,6 +31,15 @@ DEVICES = {
     'DEVICE1' : '192.168.178.77:5555',
     'DEVICE2' : '192.168.178.95:5555',
 }
+
+"""
+MAD Section.
+"""
+mitm_server = 'http://example.com'
+mitm_port = 8000
+origin = 'DEVICE1'
+deviceauthuser = 'user'
+deviceauthpass = 'pass'
 ```
 
 # Things you need to deploy on your host directly:
