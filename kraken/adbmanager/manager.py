@@ -1,4 +1,5 @@
 import subprocess
+import requests
 import asyncio
 import time
 import config as config
@@ -34,13 +35,29 @@ class ADBmanager(object):
         output = ps.communicate()[0].decode('utf-8')
         return output
 
+    def act_pogo_version(self):
+        temp_prenumber = 0
+        temp_mainnumber = 0
+        temp_postnumber = 0
+
+        url = "{}:{}/get_addresses/".format(config.mitm_server,config.mitm_port)
+        pogo_adresses = requests.get(url, headers={'origin': config.origin}, auth=requests.auth.HTTPBasicAuth(config.deviceauthuser,config.deviceauthpass)).json()
+        for key, value in pogo_adresses.items():
+            pogo_version = (key.replace("_32", "").replace("_64", "").split('.', 3))
+            if int(pogo_version[1]) > int(temp_mainnumber):
+                temp_prenumber = pogo_version[0]
+                temp_mainnumber = pogo_version[1]
+                temp_postnumber = pogo_version[2]
+        return "{}.{}.{}".format(temp_prenumber,temp_mainnumber,temp_postnumber)
+
     def get_pogo_versions(self):
         versions = []
         for device, serial in self.devices.items():
             cmd = "adb -s %s shell dumpsys package com.nianticlabs.pokemongo | grep versionName" % serial
             ps = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
             version = ps.communicate()[0].decode("utf-8").strip().replace("versionName=", "")
-            if version != "0.149.1":
+            actversion = str(self.act_pogo_version())
+            if version != actversion:
                 version += "(outdated)"
             versions.append("%s: %s : %s" % (device, serial, version))
         return "\n".join(sorted_nicely(versions))
